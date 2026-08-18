@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "profile": "qwen3.8-27b-rtx5090-sglang",
+  "operatingMode": "serial-one-model-at-a-time",
+  "host": "127.0.0.1",
+  "port": 8080,
+  "containerName": "sglang-qwen38",
+  "image": "lmsysorg/sglang@sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1",
+  "context": 163840,
+  "maxContext": 163840,
+  "parallel": 1,
+  "device": "CUDA0",
+  "kvCacheDtype": "fp8_e4m3",
+  "attentionBackend": "flashinfer",
+  "memFractionStatic": 0.95,
+  "chunkedPrefillSize": 2048,
+  "disableRadixCache": true,
+  "maxRunningRequests": 1,
+  "mambaSsmDtype": "bfloat16",
+  "languageOnly": true,
+  "modelRelativePath": "models\\gittensor\\Qwen3.8-27B-NVFP4-RTX5090",
+  "draftRelativePath": "models\\RadixArk\\Qwen3.8-27B-DSpark",
+  "logRelativePath": "logs\\qwen3.8-27b-sglang",
+  "stateRelativePath": "state\\qwen3.8-27b-sglang",
+  "modelId": "qwen3.8-27b",
+  "speculative": {
+    "enabled": true,
+    "algorithm": "DSPARK",
+    "draftQuantization": "fp8",
+    "numSteps": 7,
+    "eagleTopk": 1,
+    "numDraftTokens": 8
+  },
+  "reasoning": {
+    "reasoningParser": "qwen3",
+    "toolCallParser": "qwen3_coder",
+    "requestFields": [
+      "chat_template_kwargs.enable_thinking",
+      "chat_template_kwargs.reasoning_effort"
+    ],
+    "semanticSupportStatus": "probe-required"
+  },
+  "capacity": {
+    "configuredContextTokens": 163840,
+    "measuredKvTokenCapacity": 166466,
+    "largestBenchmarkPromptTokens": 131072,
+    "benchmarkRuns": 3,
+    "benchmarkCompletionTokens": 2048,
+    "note": "Top benchmark rung is 131,072 (128k); 3 runs per rung reported as the mean, each with an exact 2,048-token completion."
+  },
+  "artifacts": {
+    "modelRepo": "gittensor-model-hub/Qwen3.8-27B-NVFP4-RTX5090",
+    "modelRevision": "df8266d27820bd57b9e835c5fe002595c631170d",
+    "draftRepo": "RadixArk/Qwen3.8-27B-DSpark",
+    "draftRevision": "85ef153be924f17ce4bf62726954eeaa4a73e854",
+    "imageDigest": "sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1",
+    "artifactsNote": "Model and draft weights are revision-pinned; the Docker image is digest-pinned. bootstrap verifies each before start."
+  },
+  "safety": {
+    "launchRequiresLoopback": true,
+    "launchRequiresPinnedRevisions": true,
+    "apiKeyMustStayOutsideRepository": true,
+    "humanCutoverConfirmationRequired": true
+  },
+  "apiKeyAutoCreate": true,
+  "apiKeyFileEnv": "SGLANG_API_KEY_FILE",
+  "apiKeyMustStayOutsideRepository": true
+}
