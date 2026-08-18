@@ -26,6 +26,8 @@ if ($profile) {
     if ($profile.kvCacheDtype -ne 'fp8_e4m3') { Add-Error 'Profile KV cache dtype must remain fp8_e4m3.' }
     if ($profile.attentionBackend -ne 'flashinfer') { Add-Error 'Profile attention backend must remain flashinfer.' }
     if ($profile.disableRadixCache -ne $true -or $profile.maxRunningRequests -ne 1) { Add-Error 'Profile must remain radix-cache-disabled and single-request.' }
+    if ($profile.prefillMaxRequests -ne 1 -or $profile.schedulePolicy -ne 'fcfs' -or $profile.sleepOnIdle -ne $true) { Add-Error 'Profile must remain single-prefill, FCFS, and sleep-on-idle.' }
+    if ($profile.requestWaitingTimeoutSeconds -ne -1 -or $profile.requestRunningTimeoutSeconds -ne -1) { Add-Error 'Profile request timeouts must remain unlimited (-1).'}
     $spec = $profile.speculative
     if ($spec.enabled -ne $true -or $spec.algorithm -ne 'DSPARK' -or $spec.draftQuantization -ne 'fp8' -or $spec.numSteps -ne 7 -or $spec.eagleTopk -ne 1 -or $spec.numDraftTokens -ne 8) {
         Add-Error 'Bundled DSpark speculative profile changed.'

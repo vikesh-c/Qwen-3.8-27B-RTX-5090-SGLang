@@ -25,6 +25,11 @@ $kvDtype = (Get-ProfileValue -Profile $profile -Name 'kvCacheDtype' -Fallback 'f
 $attn = (Get-ProfileValue -Profile $profile -Name 'attentionBackend' -Fallback 'flashinfer')
 $chunked = [int](Get-ProfileValue -Profile $profile -Name 'chunkedPrefillSize' -Fallback 2048)
 $maxRunning = [int](Get-ProfileValue -Profile $profile -Name 'maxRunningRequests' -Fallback 1)
+$prefillMaxRequests = [int](Get-ProfileValue -Profile $profile -Name 'prefillMaxRequests' -Fallback 1)
+$schedulePolicy = (Get-ProfileValue -Profile $profile -Name 'schedulePolicy' -Fallback 'fcfs')
+$sleepOnIdle = [bool](Get-ProfileValue -Profile $profile -Name 'sleepOnIdle' -Fallback $true)
+$waitingTimeout = [int](Get-ProfileValue -Profile $profile -Name 'requestWaitingTimeoutSeconds' -Fallback -1)
+$runningTimeout = [int](Get-ProfileValue -Profile $profile -Name 'requestRunningTimeoutSeconds' -Fallback -1)
 $mambaDtype = (Get-ProfileValue -Profile $profile -Name 'mambaSsmDtype' -Fallback 'bfloat16')
 $spec = $profile.PSObject.Properties['speculative'].Value
 if ([string]::IsNullOrWhiteSpace($image)) { throw 'Profile is missing "image".' }
@@ -64,6 +69,8 @@ $run = @(
     '-p', "127.0.0.1:${port}:${port}"
     '-v', "${baseMount}:/models/base:ro"
     '-v', "${draftMount}:/models/draft:ro"
+    '-e', "SGLANG_REQ_WAITING_TIMEOUT=$waitingTimeout"
+    '-e', "SGLANG_REQ_RUNNING_TIMEOUT=$runningTimeout"
     $image
     'python3', '-m', 'sglang.launch_server'
     '--model-path', '/models/base/Qwen3.8-27B-NVFP4-RTX5090'
@@ -83,12 +90,15 @@ $run = @(
     '--language-only'
     '--mem-fraction-static', [string]$memFraction
     '--max-running-requests', [string]$maxRunning
+    '--prefill-max-requests', [string]$prefillMaxRequests
+    '--schedule-policy', $schedulePolicy
     '--disable-radix-cache'
     '--mamba-ssm-dtype', $mambaDtype
     '--chunked-prefill-size', [string]$chunked
     '--reasoning-parser', 'qwen3'
     '--tool-call-parser', 'qwen3_coder'
 )
+if ($sleepOnIdle) { $run += '--sleep-on-idle' }
 Write-Host "Starting container '$container'..."
 $launch = Invoke-NativeSafe -FilePath 'docker' -ArgumentList $run -AllowFail
 if ($launch.Code -ne 0) {

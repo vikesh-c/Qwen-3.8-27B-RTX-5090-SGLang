@@ -17,6 +17,9 @@ A llama.cpp serving recipe for the same model and GPU lives in the separate repo
 | Context | 163,840 tokens, fp8_e4m3 KV cache (~166,466-token pool), chunked prefill 2048 |
 | Attention backend | FlashInfer |
 | Serving | `lmsysorg/sglang:qwen38-27b` Docker image, digest-pinned, `--language-only`, `--mem-fraction-static 0.95`, 1 concurrent request, radix cache disabled |
+| Queueing | One active request; `--max-queued-requests` and `--max-total-tokens` omitted, so waiting requests are unbounded and the KV pool is auto-sized; FCFS policy |
+| Timeouts | `SGLANG_REQ_WAITING_TIMEOUT=-1` and `SGLANG_REQ_RUNNING_TIMEOUT=-1` (no SGLang queue/running timeout) |
+| Idle behavior | `--sleep-on-idle` parks the scheduler while the endpoint is idle instead of busy-polling a CPU core |
 | API | authenticated loopback `127.0.0.1:8080`; key auto-created once under `%LOCALAPPDATA%\Qwen3.8-27B-RTX-5090-SGLang\sglang.key`, protected ACL, reused forever |
 | VRAM budget | weights ~18.8 GB + main KV ~5.1 GB + draft KV ~1.6 GB + draft weights ~1.4 GB + workspace ~4.4 GB ≈ 31.3 GiB of 32 GiB |
 
