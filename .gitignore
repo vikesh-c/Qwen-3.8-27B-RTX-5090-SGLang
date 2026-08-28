@@ -1,0 +1,26 @@
+# Local configuration and secrets
+config/profile.json
+*.local.json
+.env
+.env.*
+secrets/
+*.key
+*.secret
+*.token
+
+# Runtime artifacts
+*.log
+logs/
+state/
+local/
+
+# Model artifacts (downloaded by bootstrap, never committed)
+*.gguf
+*.safetensors
+models/
+
+# Benchmark runner scratch logs
+benchmarks/*.log
+benchmarks/*.progress.jsonl
+
+# Benchmark output is written under results/ and is intentionally tracked.
